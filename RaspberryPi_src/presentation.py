@@ -77,3 +77,5 @@ if __name__ == "__main__":
     # Turn Alert Siren OFF
     alertLight.on()
     print('Alert OFF ...')
+    
+    print('ResQ4U Bye')
