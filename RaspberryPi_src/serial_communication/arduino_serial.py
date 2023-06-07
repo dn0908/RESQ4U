@@ -48,7 +48,7 @@ class SerialWrapper():
             line = self.device.readline().decode('utf-8').rstrip()
             print(line)
 
-            if (line == "ended"):
+            if (line == "Arduino Ended"):
                 self.align_flag = False
                 self.end_flag = True        
 

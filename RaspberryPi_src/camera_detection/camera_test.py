@@ -56,7 +56,8 @@ class PersonDetector():
         self.labels = read_label_file(self.args.labels)
         self.inference_size = input_size(self.interpreter)
 
-        self.cap = cv2.VideoCapture(self.args.camera_idx, cv2.CAP_V4L)
+        self.file_path = '1080_night2.mp4'
+        self.cap = cv2.VideoCapture(self.file_path, cv2.CAP_GSTREAMER)
         # self.cap = cv2.VideoCapture('/dev/video0', cv2.CAP_GSTREAMER)
 
         width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -70,8 +71,8 @@ class PersonDetector():
         print('** set streaming frame size to: width=%d, height=%d' % (width_stream, height_stream))
         print('streaming set done')
         
-        self.cap.set(cv2.CAP_PROP_FPS, 5)
-        print('fps set to 5')
+        # self.cap.set(cv2.CAP_PROP_FPS, 5)
+        # print('fps set to 5')
         
 
     def detect(self):

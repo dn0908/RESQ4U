@@ -9,7 +9,6 @@ class PanTilt:
         self.frame_center = [960,540] # 1080p
         # self.frame_center = [640,360] # 720p
         # self.frame_center = [320,240] # 480p
-        #self.bounding_box_center = None
         
         self.panMotor = StepMotorController(config.pan_motor, gear_ratio=4)
         self.tiltMotor = StepMotorController(config.tilt_motor, gear_ratio=2)
@@ -23,22 +22,22 @@ class PanTilt:
 
     def pan_tilt(self, bounding_box_center):
         
-        error_threshold =  10   # theoretically this should be smaller than 5 (cause align delta is 10...)
+        error_threshold =  15        # theoretically this should be smaller than 5 (cause align delta is 10...)
 
         pan_step        : int = 12   
-        tilt_step_low   : int = 4   # minimum for tilting down
-        tilt_step_high  : int = 32 # Overshooting method for tilting up
+        tilt_step_low   : int = 8    # minimum for tilting down
+        tilt_step_high  : int = 8    # Overshooting method for tilting up
 
         if bounding_box_center is not None:
-            # print("frame:", self.frame_center, "bbox:", bounding_box_center)
+            print("frame:", self.frame_center, "bbox:", bounding_box_center)
             
-            print(bounding_box_center)
+            # print(bounding_box_center)
             
             error_x = self.frame_center[0] - bounding_box_center[0]
             error_y = - self.frame_center[1] + bounding_box_center[1]
 
-            print("error_x = ", error_x)
-            print("error_y = ", error_y)
+            # print("error_x = ", error_x)
+            # print("error_y = ", error_y)
 
             if (abs(error_x) > error_threshold) or (abs(error_y) > error_threshold):
                 self.align_flag = False

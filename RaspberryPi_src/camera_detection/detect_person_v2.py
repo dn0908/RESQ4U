@@ -4,7 +4,7 @@ from imports import *
 #  
 
 class PersonDetector:
-    def __init__(self, pan_tilt, show_image=True ):
+    def __init__(self, pan_tilt, show_image=True, record_vid=False ):
         self.show_image = show_image
 
         # Flag for detection start
@@ -29,12 +29,18 @@ class PersonDetector:
         # self.width  = 640
         # self.height = 480
 
-        self.framerate = 30 #fps
+        self.framerate = 10 #fps
 
-        self.crop_size = 300
+        self.crop_size = 350
         self.cropped_im_center = [0, 0]
+
+        # 1080p
         self.sliding_idx_x = 7
         self.sliding_idx_y = 6
+
+        # self.sliding_idx_x = 5
+        # self.sliding_idx_y = 4
+
         self.sliding_pixel_x = int((self.width - self.crop_size) / (self.sliding_idx_x - 1))
         self.sliding_pixel_y = int((self.height - self.crop_size) / (self.sliding_idx_y - 1))
 
@@ -83,7 +89,19 @@ class PersonDetector:
         
         self.cap.set(cv2.CAP_PROP_FPS, self.framerate)
         print(f'fps set to {self.framerate}')
-        
+
+        self.record_vid = record_vid
+
+        if self.record_vid:
+            # video writer
+            fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+            save_dir = 'output_' + str(time.time()) + '.avi'
+            fps = self.cap.get(cv2.CAP_PROP_FPS)
+            self.writer = cv2.VideoWriter(save_dir, fourcc, fps-1, (self.width, self.height))
+            
+            if not self.writer.isOpened():
+                print("File open failed")
+                sys.exit()
 
     def detect(self):
         
@@ -132,7 +150,6 @@ class PersonDetector:
             objs = get_objects(self.interpreter, self.args.threshold)[:self.args.top_k]
             cv2_im = self.append_objs_to_img(cv2_im, self.inference_size, objs, self.labels)
             cv2_im = cv2.rectangle(cv2_im, (0, 0), (self.crop_size, self.crop_size), (0, 0, 255), 2)
-            
 
             if self.is_detected and self.detection_start_flag == False:
                 print("0")
@@ -147,8 +164,11 @@ class PersonDetector:
                     print("1")
                     return 1
 
+            if self.record_vid:
+                self.writer.write(frame)
+
             cv2.imshow('frame', frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if cv2.waitKey(round(1000/self.framerate)) == 27 & 0xFF == ord('q'):
                 break
             # if self.show_image == True:
             #     cv2.imshow('frame', frame)
@@ -162,6 +182,7 @@ class PersonDetector:
         # finally:
             # Release the video capture and close any open windows
         self.cap.release()
+        self.writer.release()
         cv2.destroyAllWindows()
 
     def append_objs_to_img(self, cv2_im, inference_size, objs, labels):

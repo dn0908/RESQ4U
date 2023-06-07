@@ -7,6 +7,7 @@ from serial_communication.arduino_serial import SerialWrapper
 from camera_detection.detect_person_v2 import PersonDetector
 from pan_tilt.stepmotor_control import StepMotorController
 from alert.relay_control import Relay
+# from alert.emergency_call import EmergencyCaller
 
 
 
@@ -18,7 +19,8 @@ if __name__ == "__main__":
     arduino = SerialWrapper(device=config.arduino_uno)
     detector = PersonDetector(pan_tilt, show_image=True, record_vid=False)
     searchLight = Relay(pin = config.searchlight)
-    alertLight = Relay(pin = config.alert) 
+    alertLight = Relay(pin = config.alert)
+    # caller = EmergencyCaller()
 
     # Turn Search Light OFF
     searchLight.off()
@@ -36,18 +38,18 @@ if __name__ == "__main__":
         print("mode", mode)
         if (mode == 0): 
             print("inside mode 0")
-            arduino.send_flag("d")
+            # arduino.send_flag("d")
             time.sleep(0.5)
         elif (mode == 1):
             print("inside mode 1")
             break
     
     time.sleep(1)
-    arduino.send_flag("a")
+    arduino.send_flag("f")
     
     ###################### WHEN DETECTED LAUNCH! #######################
-    # Call for HELP
-    # caller.callHELP() -- test this at last (SID authorization shouldnt be on git public)
+    # # Call for HELP
+    # caller.callHELP()
 
     # Turn Search Light ON
     searchLight.on()
@@ -75,9 +77,3 @@ if __name__ == "__main__":
     # Turn Alert Siren OFF
     alertLight.on()
     print('Alert OFF ...')
-
-
-
-
-
-# from camera_detection.detect_person import PersonDetector
